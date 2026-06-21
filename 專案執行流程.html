@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>專案執行流程</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{
+  --color-text-primary:#1a1a1a;
+  --color-text-secondary:#666;
+  --color-text-tertiary:#999;
+  --color-text-danger:#c0392b;
+  --color-text-warning:#856404;
+  --color-text-info:#0c5460;
+  --color-text-success:#155724;
+  --color-background-primary:#fff;
+  --color-background-secondary:#f5f5f5;
+  --color-background-tertiary:#ebebeb;
+  --color-background-danger:#fdf3f2;
+  --color-background-warning:#fff8e1;
+  --color-background-info:#d1ecf1;
+  --color-background-success:#d4edda;
+  --color-border-tertiary:rgba(0,0,0,.1);
+  --color-border-secondary:rgba(0,0,0,.2);
+  --color-border-primary:rgba(0,0,0,.35);
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --color-text-primary:#f0f0f0;
+    --color-text-secondary:#aaa;
+    --color-text-tertiary:#777;
+    --color-text-danger:#e57373;
+    --color-text-warning:#ffd54f;
+    --color-text-info:#80deea;
+    --color-text-success:#a5d6a7;
+    --color-background-primary:#1e1e1e;
+    --color-background-secondary:#2a2a2a;
+    --color-background-tertiary:#333;
+    --color-background-danger:rgba(192,57,43,.15);
+    --color-background-warning:rgba(133,100,4,.15);
+    --color-background-info:rgba(12,84,96,.2);
+    --color-background-success:rgba(21,87,36,.2);
+    --color-border-tertiary:rgba(255,255,255,.1);
+    --color-border-secondary:rgba(255,255,255,.2);
+    --color-border-primary:rgba(255,255,255,.35);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-primary);color:var(--color-text-primary);min-height:100vh}
+.container{max-width:780px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.top-bar{display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.top-bar h1{font-size:17px;font-weight:600;color:var(--color-text-primary);flex:1;min-width:100px}
+.proj-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.proj-row label{font-size:12px;color:var(--color-text-secondary)}
+.proj-row select{font-size:12px;padding:4px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);max-width:160px;cursor:pointer}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+.btn-sm:hover{background:var(--color-background-secondary)}
+.tabs{display:flex;margin-bottom:1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.tab{font-size:13px;padding:7px 16px;cursor:pointer;border-bottom:2px solid transparent;color:var(--color-text-secondary);margin-bottom:-0.5px;white-space:nowrap}
+.tab.active{color:var(--color-text-primary);border-bottom-color:#1D9E75;font-weight:500}
+.view{display:none}.view.active{display:block}
+.progress-bar-wrap{margin-bottom:1.25rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:11px 14px}
+.ph-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.pl{font-size:11px;color:var(--color-text-secondary)}.pc{font-size:11px;font-weight:500;color:var(--color-text-primary)}
+.pt{height:5px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden}
+.pf{height:100%;background:#1D9E75;border-radius:99px;transition:width .3s}
+.proj-info{font-size:11px;color:var(--color-text-secondary);margin-bottom:.85rem;padding:6px 11px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.type-badge{font-size:10px;padding:2px 7px;border-radius:var(--border-radius-md);font-weight:500;flex-shrink:0}
+.type-activity{background:#EEEDFE;color:#534AB7}
+.type-website{background:#E1F5EE;color:#0F6E56}
+.phase-block{margin-bottom:.65rem;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.phase-hdr{display:flex;align-items:center;gap:8px;padding:9px 13px;cursor:pointer;background:var(--color-background-secondary);user-select:none}
+.phase-hdr:hover{background:var(--color-background-tertiary)}
+.pdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ptitle{font-size:13px;font-weight:500;color:var(--color-text-primary);flex:1}
+.pmeta{font-size:11px;color:var(--color-text-secondary)}
+.pchev{font-size:14px;color:var(--color-text-secondary);transition:transform .2s}
+.pchev.open{transform:rotate(180deg)}
+.step-row{padding:10px 13px;border-top:0.5px solid var(--color-border-tertiary)}
+.step-row:hover{background:var(--color-background-secondary)}
+.step-row.warn{border-left:3px solid #E24B4A;background:rgba(226,75,74,.04)}
+.stop{display:flex;align-items:flex-start;gap:9px}
+.schk{width:15px;height:15px;accent-color:#1D9E75;flex-shrink:0;margin-top:3px;cursor:pointer}
+.sbody{flex:1;min-width:0}
+.snrow{display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.sname{font-size:13px;color:var(--color-text-primary);cursor:pointer;line-height:1.4}
+.sname.done{text-decoration:line-through;color:var(--color-text-tertiary)}
+.sname.skp{color:#E24B4A;font-weight:500}
+.stag{font-size:10px;padding:1px 6px;border-radius:var(--border-radius-md);font-weight:500}
+.treq{background:var(--color-background-info);color:var(--color-text-info)}
+.topt{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.tskp{background:var(--color-background-danger);color:var(--color-text-danger)}
+.sdesc{font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.6}
+.sub-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;margin-top:5px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);cursor:pointer}
+.sub-toggle:hover{background:var(--color-background-tertiary)}
+.sub-prog{font-size:10px;color:var(--color-text-secondary)}
+.sub-list{margin-top:6px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;display:none}
+.sub-list.show{display:block}
+.sub-item{display:flex;align-items:flex-start;gap:8px;padding:7px 11px;border-top:0.5px solid var(--color-border-tertiary)}
+.sub-item:first-child{border-top:none}
+.sub-item:hover{background:var(--color-background-secondary)}
+.sub-chk{width:13px;height:13px;accent-color:#1D9E75;flex-shrink:0;margin-top:2px;cursor:pointer}
+.sub-label{font-size:12px;color:var(--color-text-primary);line-height:1.5;cursor:pointer}
+.sub-label.done{text-decoration:line-through;color:var(--color-text-tertiary)}
+.warn-banner{display:flex;align-items:center;gap:5px;margin-top:5px;padding:5px 9px;border-radius:var(--border-radius-md);background:rgba(226,75,74,.1)}
+.warn-banner i{font-size:13px;color:#E24B4A;flex-shrink:0}
+.warn-banner span{font-size:11px;color:var(--color-text-danger)}
+.arow{display:flex;align-items:center;gap:5px;margin-top:6px;flex-wrap:wrap}
+.risk-btn{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);background:var(--color-background-warning);color:var(--color-text-warning);border:none;cursor:pointer}
+.skip-btn{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);cursor:pointer}
+.skip-btn:hover{background:var(--color-background-tertiary)}
+.skip-lbl{font-size:11px;color:var(--color-text-secondary);display:flex;align-items:center;gap:3px}
+.risk-detail{font-size:11px;color:var(--color-text-warning);margin-top:5px;padding:6px 9px;background:var(--color-background-warning);border-radius:var(--border-radius-md);border-left:2px solid #BA7517;line-height:1.5;display:none}
+.risk-detail.show{display:block}
+.note-wrap{margin-top:6px}
+.note-lbl{font-size:10px;color:var(--color-text-secondary);margin-bottom:3px}
+.note-wrap textarea{width:100%;font-size:11px;padding:6px 9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical;min-height:42px;font-family:var(--font-sans);line-height:1.5}
+.note-wrap textarea:focus{outline:none;border-color:var(--color-border-primary)}
+.close-proj-wrap{margin-top:1.5rem;padding:13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);display:flex;align-items:center;gap:10px;background:var(--color-background-secondary)}
+.close-proj-info{flex:1}
+.close-proj-info p{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.close-proj-info span{font-size:11px;color:var(--color-text-secondary)}
+.close-btn-active{font-size:12px;padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid #1D9E75;cursor:pointer;background:#1D9E75;color:#fff;white-space:nowrap}
+.close-btn-done{font-size:12px;padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);white-space:nowrap}
+/* Dashboard */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.25rem}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:11px 13px}
+.stat-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:5px}
+.stat-val{font-size:24px;font-weight:500;color:var(--color-text-primary)}
+.stat-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.chart-wrap{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1.25rem}
+.chart-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px}
+.tbl-wrap{overflow-x:auto}
+.proj-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.proj-tbl th{text-align:left;padding:6px 9px;font-size:11px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);font-weight:500;white-space:nowrap}
+.proj-tbl td{padding:9px 9px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;white-space:nowrap}
+.mini-prog{display:flex;align-items:center;gap:7px}
+.mini-track{width:80px;height:4px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;flex-shrink:0}
+.mini-fill{height:100%;background:#1D9E75;border-radius:99px}
+.pct-lbl{font-size:11px;color:var(--color-text-secondary);min-width:30px}
+.b-active{font-size:10px;padding:2px 7px;border-radius:var(--border-radius-md);background:var(--color-background-success);color:var(--color-text-success)}
+.b-closed{font-size:10px;padding:2px 7px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary)}
+/* Sheet tab */
+.sheet-info{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem;border:0.5px solid var(--color-border-tertiary)}
+.sheet-info h3{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+.col-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:11px}
+.col-name{font-weight:500;color:var(--color-text-primary);white-space:nowrap;padding-top:2px}
+.col-desc{color:var(--color-text-secondary);line-height:1.5}
+.col-ex{font-size:10px;color:var(--color-text-tertiary);font-style:italic}
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);padding:1.35rem;width:330px;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:15px;font-weight:500;margin-bottom:14px;color:var(--color-text-primary)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
+.field input{width:100%;font-size:13px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)}
+.field input:focus{outline:none;border-color:var(--color-border-primary)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.modal-btns button{font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);cursor:pointer;background:transparent;color:var(--color-text-primary)}
+.modal-btns .primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.sect-lbl{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:7px}
+.type-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.type-opt{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:11px;cursor:pointer;text-align:center;transition:background .15s}
+.type-opt:hover{background:var(--color-background-secondary)}
+.type-opt.selected{border-color:#1D9E75;background:rgba(29,158,117,.07)}
+.type-opt i{font-size:22px;display:block;margin-bottom:5px;color:var(--color-text-secondary)}
+.type-opt.selected i{color:#1D9E75}
+.type-opt span{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.type-opt small{font-size:10px;color:var(--color-text-secondary);display:block;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="top-bar">
+  <h1>專案執行流程</h1>
+  <div class="proj-row">
+    <label>專案</label>
+    <select id="projectSel"></select>
+    <button class="btn-sm" onclick="openModal()"><i class="ti ti-plus"></i> 新增</button>
+  </div>
+</div>
+<div class="tabs">
+  <div class="tab active" id="tab-flow" onclick="switchTab('flow')">流程 Checklist</div>
+  <div class="tab" id="tab-dash" onclick="switchTab('dash')">總覽 Dashboard</div>
+  <div class="tab" id="tab-sheet" onclick="switchTab('sheet')">Sheet 設定</div>
+</div>
+
+<div class="view active" id="view-flow">
+  <div id="projInfo" class="proj-info"></div>
+  <div class="progress-bar-wrap">
+    <div class="ph-row"><span class="pl">完成進度</span><span class="pc" id="progCount"></span></div>
+    <div class="pt"><div class="pf" id="progFill" style="width:0%"></div></div>
+  </div>
+  <div id="phaseList"></div>
+  <div class="close-proj-wrap">
+    <i class="ti ti-flag" style="font-size:20px;color:var(--color-text-secondary)"></i>
+    <div class="close-proj-info">
+      <p>專案狀態</p>
+      <span>標記結案後，此專案將從總覽移除</span>
+    </div>
+    <button id="closeBtn" onclick="toggleClose()"></button>
+  </div>
+</div>
+
+<div class="view" id="view-dash">
+  <div class="stat-grid" id="statGrid"></div>
+  <div class="chart-wrap"><div class="chart-title">各專案完成度</div><canvas id="barChart"></canvas></div>
+  <div class="chart-wrap">
+    <div class="chart-title">專案明細</div>
+    <div class="tbl-wrap">
+      <table class="proj-tbl" id="projTbl">
+        <thead><tr><th>專案名稱</th><th>類型</th><th>代碼</th><th>管理人</th><th>完成度</th><th>狀態</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-sheet">
+  <div class="sheet-info">
+    <h3>Google Sheet 建議欄位結構</h3>
+    <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;line-height:1.6">在 Sheet 中用以下欄位定義流程，前台讀取後自動顯示。<strong>詳細說明</strong>欄位每行一個子項目，有填就會出現 sub-checklist，沒填就只顯示簡短說明。</p>
+    <div class="col-grid">
+      <span class="col-name">類型</span><div><span class="col-desc">activity 或 website</span><br><span class="col-ex">activity</span></div>
+      <span class="col-name">階段</span><div><span class="col-desc">階段名稱</span><br><span class="col-ex">Kick off 會議</span></div>
+      <span class="col-name">步驟名稱</span><div><span class="col-desc">步驟的標題</span><br><span class="col-ex">確認設計規格與瀏覽器支援</span></div>
+      <span class="col-name">簡短說明</span><div><span class="col-desc">一行描述，顯示在步驟標題下方</span><br><span class="col-ex">確認哪些頁面要出小網設計...</span></div>
+      <span class="col-name">詳細說明</span><div><span class="col-desc">每行一個子項目（換行分隔），有填就自動產生 sub-checklist</span><br><span class="col-ex">確認支援 1920 以內螢幕寬度<br>iPad 直橫式是否支援</span></div>
+      <span class="col-name">必要</span><div><span class="col-desc">是 / 否</span><br><span class="col-ex">是</span></div>
+      <span class="col-name">跳過風險</span><div><span class="col-desc">若空白則不顯示風險按鈕</span><br><span class="col-ex">未確認規格，切版後全面調整成本極高</span></div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.8;padding:0 2px">
+    <p style="margin-bottom:8px"><strong style="color:var(--color-text-primary)">如何串接：</strong>把 Google Sheet 設為「任何知道連結的人都可以檢視」，將試算表 ID 提供給工程師或 Claude，就可以讓網頁自動讀取並顯示最新流程。</p>
+    <p><strong style="color:var(--color-text-primary)">同事可以修改嗎：</strong>可以給有編輯權限的同事直接改 Sheet，下次重新整理網頁就會看到更新後的流程。</p>
+  </div>
+</div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2>新增專案</h2>
+    <div class="sect-lbl">專案類型</div>
+    <div class="type-selector">
+      <div class="type-opt selected" id="opt-activity" onclick="selectType('activity')">
+        <i class="ti ti-speakerphone"></i>
+        <span>活動網頁</span><small>20 個步驟</small>
+      </div>
+      <div class="type-opt" id="opt-website" onclick="selectType('website')">
+        <i class="ti ti-world"></i>
+        <span>網站建置</span><small>14 個步驟</small>
+      </div>
+    </div>
+    <div class="field"><label>專案名稱 *</label><input id="f-name" type="text" placeholder="例：2024 夏季活動"></div>
+    <div class="field"><label>專案代碼 *</label><input id="f-code" type="text" placeholder="例：PRJ-2024-001"></div>
+    <div class="field"><label>專案管理人</label><input id="f-pm" type="text" placeholder="例：王小明"></div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">取消</button>
+      <button class="primary" onclick="addProject()">建立專案</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+function parseDetail(str){
+  if(!str)return[];
+  return str.split('\n').map(l=>l.trim()).filter(l=>l&&l.length>2);
+}
+function subKey(sid,i){return sid+'_s'+i}
+
+const PHASES_MAP={
+activity:[
+  {id:'a_p1',title:'活動提案',color:'#534AB7',steps:[
+    {id:'a1',name:'申請專案代碼',req:true,desc:'要先跟小豆申請專案代碼 code，此 code 要於 Slack 中的主題 topic 更新',detail:'Campaign Idea 概念說明\n架構 + 機制規劃\n留意按鈕導向的連結是否正確',risk:'無代碼導致費用歸屬錯誤，結案時難以對帳，影響請款流程'},
+  ]},
+  {id:'a_p2',title:'提供報價',color:'#0F6E56',steps:[
+    {id:'a2',name:'提供報價與確認合約',req:true,desc:'請執行單位提供 MD，開 Slack、GitLab；確認是否需要合約，留意請款時程，使用最新報價單',detail:'時程安排：revise 改為 html bug 修復；內部時程把 review 另外條列\n若有後端，確認撈報表的頻率\n確認是否需要合約，使用最新報價單',risk:'未確認範疇易低估，後期追加費用引發客戶爭議；未簽合約即開工有法律風險'},
+  ]},
+  {id:'a_p3',title:'Kick off 會議',color:'#185FA5',steps:[
+    {id:'a3',name:'準備文件並通知小豆轉 project code',req:true,desc:'報價確認後準備文件，更新 Slack topic；內部 kick off 整體說明、時程規劃、文件存檔路徑',detail:'內部 kick off：整體活動說明\n時程規劃（revise 改為 html bug 修復；review 另外條列）\n若有後台，須請 UX 拉出後台 schedule\n文件存檔路徑確認',risk:''},
+    {id:'a4',name:'確認設計規格與瀏覽器支援',req:true,desc:'確認哪些頁面要出小網設計、螢幕寬度、iPad 直橫式、使用何種工具過 UI',detail:'確認支援 1920 以內螢幕寬度\niPad 直、橫式（通常走 PC 版）是否支援\n手機圖片/文字若需等比例放大，確認用 320 或 375 寬度製作\n瀏覽器版本確認（Edge 舊版 IE 核心 vs 新版 Chrome 核心）\nUX、UI、F2E、B2E 注意事項記錄在 WIKI\n若有撈報表需求，提早溝通讓 IT 安排人力\n有到前端的案子，Slack & GitLab channel 做串聯',risk:'未確認規格，切版後若需全面調整成本極高'},
+    {id:'a5',name:'確認基本素材是否齊全',req:false,desc:'進企劃/設計前先確認素材齊全',detail:'客戶 LOGO、設計規範\n警語文字、個資宣告文字\n產品圖（如：卡面）\nAPP 下載連結、QR Code\n確認客戶能否看到 Axure / InVision 連結',risk:'素材不齊全會導致設計中斷，影響時程'},
+  ]},
+  {id:'a_p4',title:'線稿 Wireframe',color:'#993C1D',steps:[
+    {id:'a6',name:'詳細頁面規劃與 wireframe 會議',req:true,desc:'頁面結構規劃、true/false 規則說明、錯誤訊息、FB/LINE 分享按鈕、Meta 資訊',detail:'詳細頁面規劃，以及 true/false 的規則說明\n各種欄位需要有錯誤訊息的判斷，以及要跳出的訊息與導向的連結\n提醒企劃須思考 RWD 排版資訊\n選單需有 FB/LINE 按鈕（FB 跟 LINE 分享圖可以分開）\n同時提供 meta 資訊\nwireframe 會議要約所有執行單位；有變更流程/需求要再找大家開會\nwireframe 分內外部，內部過完後請 UX 更新到外部連結\n若沒有 HTTPS 就無法支援陀螺儀，iOS 陀螺儀支援度要先確認',risk:'跳過線稿直接進彩稿，修改成本高且容易遺漏邊緣情境（錯誤頁、空狀態）'},
+  ]},
+  {id:'a_p5',title:'頁面設計',color:'#185FA5',steps:[
+    {id:'a7',name:'彩稿設計與 Zeplin 標註',req:true,desc:'大小網都要過彩稿會議，確認 Zeplin 標註單元名稱，客戶確認後標註 OK',detail:'若有規則限制，先告知（如 guideline 或 logo 規範）\n提醒設計跟前端 sync 哪些頁面要出小網設計\n選單需有 FB/LINE 按鈕\n確認按鈕是否要有 mouseover 效果並提供示意，留意是否需要 loading 圖\n若小網設計需在一屏呈現，需考慮瀏覽器預設網址列與下方操作列\n客戶確認彩稿後，在 Zeplin 單元標題標註 OK\n設計彩稿確認後，請 UI 同事更新到外部連結（InVision / demo site）',risk:'未取得書面確認，上線後客戶要求修改將難以收費'},
+    {id:'a8',name:'客戶彩稿書面確認',req:true,desc:'提供彩稿給客戶前，內部需召開一次會議；若客戶對動態很刁，過設計時要說明',detail:'Designer 按照線稿單元標註 Zeplin 單元名稱\nAccount 需在後方標註時程表的大項\n若客戶確認 OK，須於 Zeplin 單元名稱標註 OK\n客戶確認過又要回頭修改的彩稿由 account 歸檔',risk:'未取得書面確認，上線後客戶要求修改將難以收費'},
+  ]},
+  {id:'a_p6',title:'Banner 與分享圖',color:'#854F0B',steps:[
+    {id:'a9',name:'Banner concept + FB/LINE 分享圖製作',req:false,desc:'concept 文案撰寫、concept 設計、FB 分享圖製作',detail:'concept 文案撰寫，包含 FB、LINE 分享圖的描述文案 + 圖片文案\nconcept 設計，FB 分享圖：擇一 1200×630（橫屏）or 600×315（左圖右文）\n請企劃提供 meta 中所需資訊\n若要 resize，留意 CUE 表時間',risk:'缺少 OG 圖，社群分享顯示異常，影響擴散效果'},
+  ]},
+  {id:'a_p7',title:'技術設定',color:'#3B6D11',steps:[
+    {id:'a10',name:'申請網址與 SSL 憑證',req:true,desc:'請 IT 設定網址（24 小時生效）或設定主機；申請 SSL（open SSL 可免費 6 個月）',detail:'至 GitLab 開 issue 申請\n留意是否需申請 HTTPS\n若需要需先寫採購申請單',risk:'未提早申請 SSL，上線當天 HTTPS 未生效，瀏覽器顯示不安全警告'},
+    {id:'a11',name:'Meta 資訊設定',req:true,desc:'設定 GA 追蹤碼，填寫 meta 資訊表；手機版分享一定會有 FB/LINE，PC 只有 FB',detail:'先設定 GA 追蹤碼，填寫 meta 資訊表\n手機版分享一定會有 FB/LINE；PC 只有 FB\nFB 分享網址不能用短網址\nGA 事件設定',risk:'Meta 未設定影響 SEO 及社群分享預覽；追蹤碼遺漏則前期流量數據永久缺失'},
+  ]},
+  {id:'a_p8',title:'前端開發',color:'#533489',steps:[
+    {id:'a12',name:'頁面切版',req:true,desc:'依 Zeplin 規格切版，提供頁籤 .ico 檔、meta 資訊、FB 分享圖',detail:'若有規則限制，請用 WIKI 紀錄\n提供頁籤 .ico 檔、meta 資訊、FB 分享圖\ntab 是否要獨立網址\n提醒前端注意 gaScript 大小寫一定要正確，GA 才會有紀錄\n一旦進入前端，UXUI 有任何變動，一定要讓前端知道，結論記錄在前端 wiki 中\nhtml bug 修復包含在預定時程中，若是其他需求則另行討論時程\n需額外詢問是否需要放媒體 CODE',risk:''},
+    {id:'a13',name:'後端套版開發（若有）',req:false,desc:'內部進行 SIT，大小網都要測（含分享到 FB/LINE 的狀態）；上傳客戶測試機進行 UAT',detail:'內部進行 SIT，大小網都要測（包含分享到 FB/LINE 狀態與資訊）\n在 Slack 上通知各執行單位測試\n若放客戶端，要和客戶要測試環境及權限（最好可以遠端連線）\n上傳到客戶測試機，請客戶進行 UAT\n若頁面已套版，客戶要再修改，不再修改 html',risk:'跳過 SIT 直接 UAT，系統性問題在客戶面前暴露，嚴重影響信任'},
+  ]},
+  {id:'a_p9',title:'測試與上線',color:'#0F6E56',steps:[
+    {id:'a14',name:'網站測試',req:true,desc:'大小網都要測，包含分享到 FB/LINE 的狀態與資訊是否正確',detail:'',risk:'未做正式環境測試，環境設定差異容易造成上線即出錯'},
+    {id:'a15',name:'活動上線',req:true,desc:'大小網都要測，包含分享到 FB/LINE 的狀態與資訊是否正確',detail:'',risk:''},
+  ]},
+  {id:'a_p10',title:'廣告追蹤',color:'#993556',steps:[
+    {id:'a16',name:'廣告版位文案撰寫',req:false,desc:'請企劃提供各媒體版位的文案',detail:'',risk:''},
+    {id:'a17',name:'廣告網址追蹤設定',req:true,desc:'依照 CUE 提供各版位的 GA 網址追蹤參數',detail:'',risk:'UTM 未設定則無法分析各渠道流量，成效報告缺少重要維度'},
+    {id:'a18',name:'活動成效觀察',req:false,desc:'上線後留意網站表現，看是否需要優化',detail:'',risk:''},
+  ]},
+  {id:'a_p11',title:'結案',color:'#444441',steps:[
+    {id:'a19',name:'結案報告',req:true,desc:'撰寫結案報告，整理完整成效數據、執行心得、改進建議，存入 WIKI',detail:'',risk:'未留存結案報告，下次類似專案重複踩坑，無從學習'},
+    {id:'a20',name:'通知 IT 關閉網址（若網址掛我們家）',req:false,desc:'活動結束後須主動告知 IT 將網址關閉，否則會持續收費',detail:'',risk:'忘記通知導致持續收費，且舊活動頁仍可被訪問，可能有法律風險'},
+  ]},
+],
+website:[
+  {id:'w_p1',title:'網站提案',color:'#534AB7',steps:[
+    {id:'w1',name:'申請 presale code 並準備提案',req:true,desc:'向小豆申請 presale code，於 Slack 更新；準備客戶訪談清單、內部簡報、提案文件',detail:'客戶訪談清單準備\n內部簡報製作\n提案文件準備\npresale code 申請後更新 Slack topic',risk:'無代碼導致費用歸屬錯誤，結案時難以對帳'},
+  ]},
+  {id:'w_p2',title:'提供報價',color:'#0F6E56',steps:[
+    {id:'w2',name:'提供報價與確認合約',req:true,desc:'執行單位提供 MD，開設 Slack 與 GitLab；確認合約需求與請款時程',detail:'revise 改為 html bug 修復；內部時程需另列 review 項目\n確認合約需求與請款時程\n若有後台開發，注意後台 wireframe 交付議題\n使用最新報價單',risk:'未確認範疇易低估，後期追加費用引發客戶爭議；未簽合約即開工有法律風險'},
+  ]},
+  {id:'w_p3',title:'Kick off 會議',color:'#185FA5',steps:[
+    {id:'w3',name:'準備文件並通知小豆轉 project code',req:true,desc:'報價確認後準備文件，更新 Slack topic；內部 kick off、時程規劃、文件存檔',detail:'內部簡報說明\n時程規劃（revise 改為 html bug 修復；review 另外條列）\n文件存檔路徑確認\n瀏覽器版本確認\n相關注意事項記錄於 WIKI\n移除不相關人員\n前端案件需串聯 Slack 與 GitLab\n若有撈報表需求，提早溝通讓 IT 安排人力',risk:''},
+    {id:'w4',name:'確認基本素材與設計工具',req:false,desc:'進企劃前確認基本素材；確認客戶能否查看 Axure、InVision 連結',detail:'客戶 LOGO、設計規範\n警語文字、個資宣告文字\n確認客戶能否看到 Axure / InVision 連結\n前端框架開發需考量 SEO',risk:'素材不齊全會導致設計中斷，影響時程'},
+  ]},
+  {id:'w_p4',title:'Wireframe',color:'#993C1D',steps:[
+    {id:'w5',name:'詳細頁面規劃與 wireframe',req:true,desc:'進行詳細頁面規劃，標記上稿區塊、字數限制、錯誤訊息、RWD 排版、菜單按鈕、Meta 資訊',detail:'詳細頁面規劃，標記上稿區塊、字數限制\n錯誤訊息、RWD 排版規劃\n菜單按鈕（FB/LINE）、Meta 資訊\n內部需召開會議，外部提供客戶連結\n若有後台需進行後台需求訪談',risk:'跳過 wireframe 直接進設計，修改成本高且容易遺漏邊緣情境'},
+  ]},
+  {id:'w_p5',title:'頁面設計',color:'#185FA5',steps:[
+    {id:'w6',name:'彩稿設計、分享圖與 Zeplin 標註',req:true,desc:'告知設計規則限制、小網設計範圍；製作分享圖、loading 圖、錯誤畫面；過彩稿會議並在 Zeplin 標註 OK',detail:'告知設計規則限制\n小網設計範圍、菜單按鈕（FB/LINE）\n滑鼠懸停效果確認\n須製作分享圖、loading 圖、錯誤畫面\n過彩稿會議並在 Zeplin 標註 OK\n設計確認後由 UI 更新外部連結',risk:'未取得書面確認，上線後客戶要求修改將難以收費'},
+    {id:'w7',name:'客戶彩稿書面確認',req:true,desc:'提供彩稿給客戶前，內部需召開一次會議',detail:'Designer 按照線稿單元標註 Zeplin 單元名稱\nAccount 需在後方標註時程表的大項\n若客戶確認 OK，須於 Zeplin 單元名稱標註 OK',risk:'未取得書面確認，上線後客戶要求修改將難以收費'},
+  ]},
+  {id:'w_p6',title:'技術設定',color:'#3B6D11',steps:[
+    {id:'w8',name:'申請網址與 SSL 憑證',req:true,desc:'提早確認網址命名，請 IT 設定網址，申請 SSL 憑證',detail:'至 GitLab 開 issue 申請\n需申請 HTTPS 時先提出採購申請單\n網址 24 小時生效，提早申請',risk:'未提早申請 SSL，上線當天 HTTPS 未生效，瀏覽器顯示不安全警告'},
+    {id:'w9',name:'Meta 資訊設定',req:true,desc:'設定 GA 追蹤碼、填寫 Meta 資訊表；手機版支援 FB/LINE 分享，PC 版僅 FB',detail:'設定 GA 追蹤碼，填寫 Meta 資訊表\n手機版支援 FB/LINE 分享；PC 版僅 FB\n設定 GA 事件',risk:'追蹤碼遺漏則前期流量數據永久缺失'},
+  ]},
+  {id:'w_p7',title:'前端開發',color:'#533489',steps:[
+    {id:'w10',name:'頁面切版',req:true,desc:'告知資料夾建立方式，提供 .ico 檔、Meta 資訊、分享圖；確認 Tab 獨立網址、字型、瀏覽器相容性',detail:'告知資料夾建立方式與檔案格式\n提供 .ico 檔、Meta 資訊、分享圖\n確認 Tab 獨立網址\n字型格式支援、瀏覽器相容性確認\n前端回貼 HTML 網址至 wireframe\n任何變動需記錄於前端 Wiki\n注意 GA 大小寫；提醒預留修改時間',risk:''},
+    {id:'w11',name:'後端套版開發',req:false,desc:'進行內部 SIT 測試（大小網、FB/LINE 分享）；獲取客戶測試環境與權限；進行 UAT',detail:'內部 SIT 測試（大小網、FB/LINE 分享）\n獲取客戶測試環境與權限\n進行 UAT\n頁面套版後若需修改則不再修改 HTML',risk:'跳過 SIT 直接 UAT，系統性問題在客戶面前暴露，嚴重影響信任'},
+  ]},
+  {id:'w_p8',title:'上線與驗收',color:'#0F6E56',steps:[
+    {id:'w12',name:'網站上線',req:true,desc:'確認 GA 數據記錄是否正常；確認媒體 code 是否正確傳遞',detail:'確認 GA 數據記錄正常\n確認媒體 code 正確傳遞',risk:''},
+    {id:'w13',name:'驗收',req:true,desc:'提供驗收單與驗收文件給客戶',detail:'',risk:'無書面驗收，後續修改需求無法釐清責任'},
+  ]},
+  {id:'w_p9',title:'結案',color:'#444441',steps:[
+    {id:'w14',name:'專案檢討會議',req:true,desc:'大型專案需開啟檢討會議（需邀請老闆與 Eva）',detail:'確認是否屬於大型專案\n邀請老闆與 Eva 參與\n整理專案執行中的問題點與學習\n結論記錄存入 WIKI',risk:'未開檢討會議，經驗無法沉澱，相同問題下次仍會發生'},
+  ]},
+]};
+
+const SK='wf8';
+function load(){try{return JSON.parse(localStorage.getItem(SK)||'{}')}catch(e){return{}}}
+function save(d){localStorage.setItem(SK,JSON.stringify(d))}
+let data=load();
+if(!data.projects)data.projects={};
+if(!data.meta)data.meta={};
+if(!Object.keys(data.projects).length){
+  data.projects['示範：活動網頁']={};
+  data.meta['示範：活動網頁']={code:'PRJ-DEMO-A',pm:'王小明',type:'activity'};
+}
+if(!data.current)data.current=Object.keys(data.projects)[0];
+
+function getMeta(){return data.meta[data.current]||{}}
+function getType(){return getMeta().type||'activity'}
+function getPhases(){return PHASES_MAP[getType()]}
+function getFlat(){return getPhases().flatMap((ph,pi)=>ph.steps.map((s,si)=>({...s,pi,si})))}
+function proj(){return data.projects[data.current]||(data.projects[data.current]={})}
+function st(sid){const p=proj();return p[sid+'_done']?'done':p[sid+'_skip']?'skip':'pending'}
+function getNextId(pi,si){
+  const phases=getPhases();
+  if(si<phases[pi].steps.length-1)return phases[pi].steps[si+1].id;
+  if(pi<phases.length-1)return phases[pi+1].steps[0].id;
+  return null;
+}
+function isWarn(pi,si){
+  const s=getPhases()[pi].steps[si];const state=st(s.id);
+  if(state==='done'||state==='skip')return false;
+  const nid=getNextId(pi,si);return nid&&st(nid)==='done';
+}
+
+let openSubs=new Set(),openRisks=new Set(),barChart=null,selType='activity';
+
+function switchTab(t){
+  ['flow','dash','sheet'].forEach(v=>{
+    document.getElementById('tab-'+v).classList.toggle('active',v===t);
+    document.getElementById('view-'+v).classList.toggle('active',v===t);
+  });
+  if(t==='dash')renderDash();
+}
+function selectType(t){
+  selType=t;
+  document.getElementById('opt-activity').classList.toggle('selected',t==='activity');
+  document.getElementById('opt-website').classList.toggle('selected',t==='website');
+}
+function renderSel(){
+  const sel=document.getElementById('projectSel');
+  sel.innerHTML=Object.keys(data.projects).map(k=>`<option value="${k}"${k===data.current?' selected':''}>${k}</option>`).join('');
+  sel.onchange=e=>{data.current=e.target.value;openSubs.clear();openRisks.clear();save(data);renderAll()};
+}
+function renderProjInfo(){
+  const m=getMeta();
+  const typeLabel=m.type==='website'?'網站建置':'活動網頁';
+  const typeCls=m.type==='website'?'type-website':'type-activity';
+  document.getElementById('projInfo').innerHTML=`<span class="type-badge ${typeCls}">${typeLabel}</span><span>代碼：${m.code||'—'}</span><span>管理人：${m.pm||'—'}</span>`;
+}
+function calcProgress(){
+  const flat=getFlat();const p=proj();let total=0,done=0;
+  flat.forEach(s=>{
+    const items=parseDetail(s.detail);
+    if(items.length>0){total+=items.length;done+=items.filter((_,i)=>p[subKey(s.id,i)]).length;}
+    else{total++;if(st(s.id)==='done')done++;}
+  });
+  return{total,done};
+}
+function renderProgress(){
+  const{total,done}=calcProgress();
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('progCount').textContent=`${done} / ${total} 項目完成（${pct}%）`;
+  document.getElementById('progFill').style.width=pct+'%';
+}
+function renderCloseBtn(){
+  const closed=!!proj()['_closed'];
+  const btn=document.getElementById('closeBtn');
+  btn.textContent=closed?'已結案 — 點此重新開啟':'標記為已上線 / 已結案';
+  btn.className=closed?'close-btn-done':'close-btn-active';
+}
+function renderPhases(){
+  const c=document.getElementById('phaseList');c.innerHTML='';
+  const p=proj();
+  getPhases().forEach((ph,pi)=>{
+    const phaseDone=ph.steps.filter(s=>{
+      const items=parseDetail(s.detail);
+      return items.length>0?items.every((_,i)=>p[subKey(s.id,i)]):st(s.id)==='done';
+    }).length;
+    const phaseSkip=ph.steps.filter(s=>st(s.id)==='skip').length;
+    const open=ph._open!==false;
+    const div=document.createElement('div');div.className='phase-block';
+    div.innerHTML=`
+<div class="phase-hdr" onclick="togglePhase(${pi})">
+  <div class="pdot" style="background:${ph.color}"></div>
+  <span class="ptitle">${ph.title}</span>
+  <span class="pmeta">${phaseDone}完成${phaseSkip?` · ${phaseSkip}跳過`:''} / ${ph.steps.length}</span>
+  <i class="ti ti-chevron-down pchev${open?' open':''}"></i>
+</div>
+<div id="sp_${ph.id}" style="display:${open?'block':'none'}">
+${ph.steps.map((s,si)=>{
+  const state=st(s.id);const note=p[s.id+'_note']||'';const warn=isWarn(pi,si);
+  const items=parseDetail(s.detail);
+  const subDone=items.filter((_,i)=>p[subKey(s.id,i)]).length;
+  const isStepDone=items.length>0?subDone===items.length:state==='done';
+  const subOpen=openSubs.has(s.id);const riskOpen=openRisks.has(s.id);
+  return`<div class="step-row${warn?' warn':''}" id="row_${s.id}">
+<div class="stop">
+  ${items.length===0
+    ?`<input type="checkbox" class="schk" id="chk_${s.id}" ${state==='done'?'checked':''} onchange="toggleDone('${s.id}')">`
+    :`<input type="checkbox" class="schk" ${isStepDone?'checked':''} disabled style="opacity:.5">`}
+  <div class="sbody">
+    <div class="snrow">
+      <label for="chk_${s.id}" class="sname${isStepDone?' done':state==='skip'?' skp':''}">${s.name}</label>
+      <span class="stag ${s.req?'treq':'topt'}">${s.req?'必要':'選擇性'}</span>
+      ${state==='skip'?'<span class="stag tskp">已確認跳過</span>':''}
+    </div>
+    ${s.desc?`<div class="sdesc">${s.desc}</div>`:''}
+    ${items.length>0?`
+      <button class="sub-toggle" onclick="toggleSub('${s.id}')">
+        <i class="ti ti-list-check"></i> 詳細步驟
+        <span class="sub-prog" id="sp_prog_${s.id}">${subDone}/${items.length}</span>
+      </button>
+      <div class="sub-list${subOpen?' show':''}" id="sub_${s.id}">
+        ${items.map((item,i)=>`
+          <div class="sub-item">
+            <input type="checkbox" class="sub-chk" id="sub_${s.id}_${i}" ${p[subKey(s.id,i)]?'checked':''} onchange="toggleSubItem('${s.id}',${i},${items.length})">
+            <label for="sub_${s.id}_${i}" class="sub-label${p[subKey(s.id,i)]?' done':''}">${item}</label>
+          </div>`).join('')}
+      </div>`:''}
+    ${warn?`<div class="warn-banner"><i class="ti ti-alert-circle"></i><span>下一步驟已完成，但此步驟尚未處理 — 是否刻意跳過？</span></div>`:''}
+    <div class="arow">
+      ${s.risk?`<button class="risk-btn" onclick="toggleRisk('${s.id}')"><i class="ti ti-alert-triangle"></i>跳過風險</button>`:''}
+      ${state!=='skip'
+        ?`<button class="skip-btn" onclick="confirmSkip('${s.id}')"><i class="ti ti-circle-check"></i>確認可跳過</button>`
+        :`<span class="skip-lbl"><i class="ti ti-circle-check" style="font-size:12px"></i>已確認跳過</span><button class="skip-btn" onclick="cancelSkip('${s.id}')">取消</button>`}
+    </div>
+    ${s.risk?`<div class="risk-detail${riskOpen?' show':''}" id="rd_${s.id}">${s.risk}</div>`:''}
+    <div class="note-wrap">
+      <div class="note-lbl">補充說明 / 備註</div>
+      <textarea placeholder="可填寫跳過原因、特殊情況說明…" onchange="saveNote('${s.id}',this.value)">${note}</textarea>
+    </div>
+  </div>
+</div>
+</div>`}).join('')}
+</div>`;
+    c.appendChild(div);ph._open=open;
+  });
+}
+function togglePhase(pi){
+  const ph=getPhases()[pi];const el=document.getElementById('sp_'+ph.id);
+  const chev=el.previousElementSibling.querySelector('.pchev');
+  const open=el.style.display==='none';
+  el.style.display=open?'block':'none';chev.classList.toggle('open',open);ph._open=open;
+}
+function toggleSub(sid){
+  const el=document.getElementById('sub_'+sid);if(!el)return;
+  const show=!el.classList.contains('show');
+  el.classList.toggle('show',show);show?openSubs.add(sid):openSubs.delete(sid);
+}
+function toggleRisk(sid){
+  const el=document.getElementById('rd_'+sid);if(!el)return;
+  const show=!el.classList.contains('show');
+  el.classList.toggle('show',show);show?openRisks.add(sid):openRisks.delete(sid);
+}
+function toggleSubItem(sid,idx,total){
+  const chk=document.getElementById('sub_'+sid+'_'+idx);
+  const p=proj();p[subKey(sid,idx)]=chk.checked;
+  const label=document.querySelector(`label[for="sub_${sid}_${idx}"]`);
+  if(label)label.className='sub-label'+(chk.checked?' done':'');
+  const items=Array.from({length:total},(_,i)=>p[subKey(sid,i)]);
+  const allDone=items.every(Boolean);
+  if(allDone)p[sid+'_done']=true;else delete p[sid+'_done'];
+  save(data);
+  const progEl=document.getElementById('sp_prog_'+sid);
+  if(progEl)progEl.textContent=items.filter(Boolean).length+'/'+total;
+  const parentChk=document.getElementById('chk_'+sid);
+  if(parentChk)parentChk.checked=allDone;
+  const nameEl=document.querySelector(`#row_${sid} .sname`);
+  if(nameEl)nameEl.classList.toggle('done',allDone);
+  renderProgress();
+  getPhases().forEach((ph,pi)=>{
+    if(!ph.steps.find(s=>s.id===sid))return;
+    const pDone=ph.steps.filter(s=>{const it=parseDetail(s.detail);return it.length>0?it.every((_,i)=>p[subKey(s.id,i)]):st(s.id)==='done';}).length;
+    const pSkip=ph.steps.filter(s=>st(s.id)==='skip').length;
+    const hdr=document.querySelector(`#sp_${ph.id}`)?.previousElementSibling?.querySelector('.pmeta');
+    if(hdr)hdr.textContent=`${pDone}完成${pSkip?` · ${pSkip}跳過`:''} / ${ph.steps.length}`;
+  });
+}
+function toggleDone(sid){
+  const chk=document.getElementById('chk_'+sid);const p=proj();
+  p[sid+'_done']=chk.checked;if(chk.checked)delete p[sid+'_skip'];
+  save(data);renderAll();
+}
+function confirmSkip(sid){const p=proj();p[sid+'_skip']=true;delete p[sid+'_done'];save(data);renderAll()}
+function cancelSkip(sid){const p=proj();delete p[sid+'_skip'];save(data);renderAll()}
+function saveNote(sid,v){const p=proj();v.trim()?p[sid+'_note']=v:delete p[sid+'_note'];save(data)}
+function toggleClose(){const p=proj();p['_closed']=!p['_closed'];save(data);renderCloseBtn()}
+function calcProjPct(k){
+  const type=(data.meta[k]||{}).type||'activity';
+  const flat=PHASES_MAP[type].flatMap(ph=>ph.steps);
+  const p=data.projects[k];let total=0,done=0;
+  flat.forEach(s=>{
+    const items=parseDetail(s.detail);
+    if(items.length>0){total+=items.length;done+=items.filter((_,i)=>p[subKey(s.id,i)]).length;}
+    else{total++;if(p[s.id+'_done'])done++;}
+  });
+  return total?Math.round(done/total*100):0;
+}
+function renderDash(){
+  const allKeys=Object.keys(data.projects);
+  const activeKeys=allKeys.filter(k=>!data.projects[k]['_closed']);
+  const actCount=allKeys.filter(k=>(data.meta[k]||{}).type!=='website').length;
+  const webCount=allKeys.filter(k=>(data.meta[k]||{}).type==='website').length;
+  document.getElementById('statGrid').innerHTML=`
+    <div class="stat-card"><div class="stat-label">進行中</div><div class="stat-val">${activeKeys.length}</div><div class="stat-sub">共 ${allKeys.length} 個專案</div></div>
+    <div class="stat-card"><div class="stat-label">活動網頁</div><div class="stat-val">${actCount}</div></div>
+    <div class="stat-card"><div class="stat-label">網站建置</div><div class="stat-val">${webCount}</div></div>`;
+  const doneData=activeKeys.map(k=>calcProjPct(k));
+  if(barChart)barChart.destroy();
+  const h=Math.max(100,activeKeys.length*38+40);
+  document.getElementById('barChart').height=h;
+  barChart=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels:activeKeys,datasets:[{label:'完成度',data:doneData,backgroundColor:doneData.map(v=>v===100?'#1D9E75':v>50?'#5DCAA5':'#9FE1CB'),borderRadius:4,barThickness:18}]},
+    options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}% 完成`}}},scales:{x:{max:100,ticks:{callback:v=>`${v}%`,font:{size:11}},grid:{color:'rgba(136,135,128,.15)'}},y:{ticks:{font:{size:12}}}}}
+  });
+  const tbody=document.querySelector('#projTbl tbody');
+  tbody.innerHTML=allKeys.map(k=>{
+    const m=data.meta[k]||{};const type=m.type||'activity';
+    const pct=calcProjPct(k);const closed=!!data.projects[k]['_closed'];
+    const typeLabel=type==='website'?'網站建置':'活動網頁';
+    const typeCls=type==='website'?'type-website':'type-activity';
+    return`<tr>
+      <td style="font-weight:500">${k}</td>
+      <td><span class="type-badge ${typeCls}">${typeLabel}</span></td>
+      <td style="color:var(--color-text-secondary)">${m.code||'—'}</td>
+      <td style="color:var(--color-text-secondary)">${m.pm||'—'}</td>
+      <td><div class="mini-prog"><div class="mini-track"><div class="mini-fill" style="width:${pct}%"></div></div><span class="pct-lbl">${pct}%</span></div></td>
+      <td><span class="${closed?'b-closed':'b-active'}">${closed?'已結案':'進行中'}</span></td>
+    </tr>`;
+  }).join('');
+}
+function renderAll(){renderSel();renderProjInfo();renderProgress();renderPhases();renderCloseBtn()}
+function openModal(){document.getElementById('modalBg').classList.add('show');selectType('activity');['f-name','f-code','f-pm'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-name').focus()}
+function closeModal(){document.getElementById('modalBg').classList.remove('show')}
+function addProject(){
+  const name=document.getElementById('f-name').value.trim();
+  const code=document.getElementById('f-code').value.trim();
+  const pm=document.getElementById('f-pm').value.trim();
+  if(!name||!code){alert('請填寫專案名稱與代碼');return}
+  data.projects[name]={};data.meta[name]={code,pm,type:selType};
+  data.current=name;save(data);closeModal();openSubs.clear();openRisks.clear();renderAll();
+}
+['f-name','f-code','f-pm'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')addProject()}));
+renderAll();
+</script>
+</body>
+</html>
