@@ -175,9 +175,15 @@ body{font-family:var(--font-sans);background:var(--color-background-primary);col
 </style>
 </head>
 <body>
+<div id="loadingBar" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(255,255,255,.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
+  <div style="width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1D9E75;border-radius:50%;animation:spin .8s linear infinite"></div>
+  <span style="font-size:13px;color:#666">從 Google Sheet 載入資料…</span>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <div class="container">
 <div class="top-bar">
   <h1>專案執行流程</h1>
+  <span id="syncStatus" style="font-size:11px;margin-left:4px"></span>
   <div class="proj-row">
     <label>專案</label>
     <select id="projectSel"></select>
@@ -222,9 +228,16 @@ body{font-family:var(--font-sans);background:var(--color-background-primary);col
 </div>
 
 <div class="view" id="view-sheet">
+  <div class="sheet-info" style="margin-bottom:1rem;border-color:#1D9E75">
+    <h3 style="color:#1D9E75">✓ 已連接 Google Sheet</h3>
+    <p style="font-size:11px;color:var(--color-text-secondary);margin-top:5px;line-height:1.6">專案進度會自動同步到 Google Sheet，所有同事看到的總覽都是即時資料。<br>流程步驟若在 Sheet 的「流程定義」分頁有資料，重新整理頁面就會自動更新。</p>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-sm" onclick="init()" style="color:#1D9E75;border-color:#1D9E75">重新同步</button>
+    </div>
+  </div>
   <div class="sheet-info">
-    <h3>Google Sheet 建議欄位結構</h3>
-    <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;line-height:1.6">在 Sheet 中用以下欄位定義流程，前台讀取後自動顯示。<strong>詳細說明</strong>欄位每行一個子項目，有填就會出現 sub-checklist，沒填就只顯示簡短說明。</p>
+    <h3>流程定義 Sheet 欄位結構</h3>
+    <p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;line-height:1.6">在「流程定義」分頁用以下欄位定義步驟，重新整理網頁即自動套用。<strong>詳細說明</strong>每行一個子項目。</p>
     <div class="col-grid">
       <span class="col-name">類型</span><div><span class="col-desc">activity 或 website</span><br><span class="col-ex">activity</span></div>
       <span class="col-name">階段</span><div><span class="col-desc">階段名稱</span><br><span class="col-ex">Kick off 會議</span></div>
@@ -355,8 +368,20 @@ website:[
 ]};
 
 const SK='wf8';
+const API_URL='https://script.google.com/a/macros/sugarfun.com.tw/s/AKfycbysSKeNmXEmXKTSChaICKwJEk7WAhnjl-CSP42-1AfLZ-MaL6zEgHhZIttKP8uV5m3Drg/exec';
 function load(){try{return JSON.parse(localStorage.getItem(SK)||'{}')}catch(e){return{}}}
 function save(d){localStorage.setItem(SK,JSON.stringify(d))}
+function syncToAPI(projName){
+  if(!projName||!data.projects[projName])return;
+  const m=data.meta[projName]||{};
+  const p=data.projects[projName]||{};
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'saveProject',name:projName,code:m.code||'',pm:m.pm||'',type:m.type||'activity',progress:p})}).catch(()=>{});
+}
+function showStatus(msg,ok){
+  const el=document.getElementById('syncStatus');
+  el.textContent=msg;el.style.color=ok?'#1D9E75':'#E24B4A';
+  clearTimeout(el._t);el._t=setTimeout(()=>{el.textContent=''},3000);
+}
 let data=load();
 if(!data.projects)data.projects={};
 if(!data.meta)data.meta={};
@@ -541,12 +566,12 @@ function toggleSubItem(sid,idx,total){
 function toggleDone(sid){
   const chk=document.getElementById('chk_'+sid);const p=proj();
   p[sid+'_done']=chk.checked;if(chk.checked)delete p[sid+'_skip'];
-  save(data);renderAll();
+  save(data);syncToAPI(data.current);renderAll();
 }
-function confirmSkip(sid){const p=proj();p[sid+'_skip']=true;delete p[sid+'_done'];save(data);renderAll()}
-function cancelSkip(sid){const p=proj();delete p[sid+'_skip'];save(data);renderAll()}
-function saveNote(sid,v){const p=proj();v.trim()?p[sid+'_note']=v:delete p[sid+'_note'];save(data)}
-function toggleClose(){const p=proj();p['_closed']=!p['_closed'];save(data);renderCloseBtn()}
+function confirmSkip(sid){const p=proj();p[sid+'_skip']=true;delete p[sid+'_done'];save(data);syncToAPI(data.current);renderAll()}
+function cancelSkip(sid){const p=proj();delete p[sid+'_skip'];save(data);syncToAPI(data.current);renderAll()}
+function saveNote(sid,v){const p=proj();v.trim()?p[sid+'_note']=v:delete p[sid+'_note'];save(data);syncToAPI(data.current)}
+function toggleClose(){const p=proj();p['_closed']=!p['_closed'];save(data);syncToAPI(data.current);renderCloseBtn()}
 function calcProjPct(k){
   const type=(data.meta[k]||{}).type||'activity';
   const flat=PHASES_MAP[type].flatMap(ph=>ph.steps);
@@ -601,10 +626,42 @@ function addProject(){
   const pm=document.getElementById('f-pm').value.trim();
   if(!name||!code){alert('請填寫專案名稱與代碼');return}
   data.projects[name]={};data.meta[name]={code,pm,type:selType};
-  data.current=name;save(data);closeModal();openSubs.clear();openRisks.clear();renderAll();
+  data.current=name;save(data);syncToAPI(name);closeModal();openSubs.clear();openRisks.clear();renderAll();
 }
 ['f-name','f-code','f-pm'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')addProject()}));
-renderAll();
+
+async function init(){
+  const bar=document.getElementById('loadingBar');
+  bar.style.display='flex';
+  try{
+    // 讀取所有專案進度
+    const res=await fetch(API_URL+'?action=getProjects',{credentials:'include'});
+    const apiData=await res.json();
+    if(apiData.projects&&Object.keys(apiData.projects).length>0){
+      // 合併：API 資料優先，保留本地尚未同步的專案
+      const localP=data.projects,localM=data.meta;
+      data.projects=apiData.projects;
+      data.meta=apiData.meta||{};
+      Object.keys(localP).forEach(k=>{if(!data.projects[k]){data.projects[k]=localP[k];data.meta[k]=localM[k]||{};}});
+      save(data);
+    }
+    // 讀取流程定義（若 Sheet 有資料才覆蓋）
+    const sRes=await fetch(API_URL+'?action=getSteps',{credentials:'include'});
+    const sData=await sRes.json();
+    if(sData.phases){
+      ['activity','website'].forEach(t=>{
+        if(sData.phases[t]&&sData.phases[t].length>0)PHASES_MAP[t]=sData.phases[t];
+      });
+    }
+    showStatus('已從 Google Sheet 同步',true);
+  }catch(e){
+    showStatus('離線模式（使用本地資料）',false);
+  }
+  bar.style.display='none';
+  if(!data.current||!data.projects[data.current])data.current=Object.keys(data.projects)[0]||null;
+  renderAll();
+}
+init();
 </script>
 </body>
 </html>
