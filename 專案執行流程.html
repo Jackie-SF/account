@@ -635,7 +635,7 @@ async function init(){
   bar.style.display='flex';
   try{
     // 讀取所有專案進度
-    const res=await fetch(API_URL+'?action=getProjects',{credentials:'include'});
+    const res=await fetch(API_URL+'?action=getProjects',{mode:'cors'});
     const apiData=await res.json();
     if(apiData.projects&&Object.keys(apiData.projects).length>0){
       // 合併：API 資料優先，保留本地尚未同步的專案
@@ -646,7 +646,7 @@ async function init(){
       save(data);
     }
     // 讀取流程定義（若 Sheet 有資料才覆蓋）
-    const sRes=await fetch(API_URL+'?action=getSteps',{credentials:'include'});
+    const sRes=await fetch(API_URL+'?action=getSteps',{mode:'cors'});
     const sData=await sRes.json();
     if(sData.phases){
       ['activity','website'].forEach(t=>{
